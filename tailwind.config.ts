@@ -8,10 +8,23 @@ const config: Config = {
   ],
   theme: {
     extend: {
+      width: {
+        'custom-calc': 'calc(100% - 120px)',
+      },
       colors: {
         background: "var(--background)",
         foreground: "var(--foreground)",
+        'UI-Color-Indigo-200': '#8B80F9',
+        'UI-Color-Neutral-100': '#FFFEFC',
       },
+      backgroundImage: {
+        'hb-pattern': "url('/hb_pattern.png')",
+        'hb-pattern-mobile': "url('/hb_pattern_mobile.svg')",
+        'copy': "url('/copy.svg')",
+        'ul-1': "url('/ul_1.svg')",
+        'ul-2': "url('/ul_2.svg')",
+        'ul-3': "url('/ul_3.svg')"
+      }
     },
   },
   plugins: [],
