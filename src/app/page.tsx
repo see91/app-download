@@ -36,18 +36,15 @@ const ReferrerInfo = () => {
       console.error(error)
     }
   }
-  return (
-    <div
-      className="w-full text-[#FFFEFC] font-[Albert Sans] text-base"
-      style={{}}
-    >
+  return address ? (
+    <div className="w-full text-[#FFFEFC] font-[Albert Sans] text-base">
       <h2 className="font-semibold">Referrer’s Address:</h2>
       <div className="flex w-full max-w-full overflow-hidden items-center justify-between">
         <span className="w-52 middle-truncate">{ellipsisFormat(address)}</span>
         <div className="w-28 h-10 bg-copy bg-no-repeat" onClick={_copy} />
       </div>
     </div>
-  )
+  ) : null
 }
 
 export default function Home() {
