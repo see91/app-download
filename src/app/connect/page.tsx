@@ -37,7 +37,7 @@ export default function Home() {
             {menus.map((x) => (
               <li
                 className="flex flex-col justify-center items-center p-3 rounded-xl border-white border-y-2"
-                onClick={_clickMenu.bind(this, x.link)}
+                onClick={_clickMenu.bind(null, x.link)}
                 key={x.text}
               >
                 <Image
