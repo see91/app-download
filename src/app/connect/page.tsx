@@ -1,24 +1,23 @@
 'use client'
 import { Suspense } from 'react'
-import Swal from 'sweetalert2'
+import Image from 'next/image'
 
 const menus = [
   {
-    text: 'How to Register?',
+    text: 'Twitter',
+    icon: '/x.svg',
+    link: 'https://x.com/_creamstream',
   },
   {
-    text: 'How to set subscription fees?',
-  },
-  {
-    text: 'Subscription payment process?',
+    text: 'Medium',
+    icon: '/medium.svg',
+    link: 'https://medium.com/@_creamstream',
   },
 ]
 
 export default function Home() {
-  const _clickMenu = () => {
-    Swal.fire({
-      title: 'Coming Soon...',
-    })
+  const _clickMenu = (link: string) => {
+    window.open(link, '_blank')
   }
 
   return (
@@ -29,20 +28,27 @@ export default function Home() {
             {/* <div className="bg-back flex w-6 h-6" /> */}
             <div />
             <div className="m-title text-UI-Color-Neutral-100 text-[18px] font-extrabold">
-              Help Center
+              Contact Us
             </div>
             <div />
           </div>
 
-          <ul className="w-full text-UI-Color-Neutral-100 text-[16px] font-semibold">
+          <ul className="w-full grid grid-cols-3 gap-8 text-UI-Color-Neutral-100 text-[16px] font-semibold mt-4 p-4">
             {menus.map((x) => (
               <li
-                className="flex justify-between px-5 py-2 border-b-2 my-3"
-                onClick={_clickMenu}
+                className="flex flex-col justify-center items-center p-3 rounded-xl border-white border-y-2"
+                onClick={_clickMenu.bind(this, x.link)}
                 key={x.text}
               >
-                <span className="truncate">{x.text}</span>
-                <span className="w-5 h-5 min-w-5 bg-back rotate-180" />
+                <Image
+                  className="dark:invert"
+                  src={x.icon}
+                  alt="icon"
+                  width={30}
+                  height={30}
+                  priority
+                />
+                <span className="truncate mt-2">{x.text}</span>
               </li>
             ))}
           </ul>
