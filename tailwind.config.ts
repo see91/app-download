@@ -23,7 +23,8 @@ const config: Config = {
         'copy': "url('/copy.svg')",
         'ul-1': "url('/ul_1.svg')",
         'ul-2': "url('/ul_2.svg')",
-        'ul-3': "url('/ul_3.svg')"
+        'ul-3': "url('/ul_3.svg')",
+        'back': "url('/back.svg')",
       }
     },
   },
