@@ -38,6 +38,7 @@ export default function Home() {
               <li
                 className="flex justify-between px-5 py-2 border-b-2 my-3"
                 onClick={_clickMenu}
+                key={x.text}
               >
                 <span className="truncate">{x.text}</span>
                 <span className="w-5 h-5 min-w-5 bg-back rotate-180" />
