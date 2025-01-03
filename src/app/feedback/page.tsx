@@ -1,5 +1,5 @@
 'use client'
-import { Suspense, useState, useRef } from 'react'
+import { Suspense, useState, useRef, useEffect } from 'react'
 import {
   Tabs,
   Tab,
@@ -10,8 +10,11 @@ import {
   Button,
 } from '@nextui-org/react'
 import Swal from 'sweetalert2'
+import { useSearchParams } from 'next/navigation'
+import { uploadImages, createQuestion } from '@/app/services/apiService'
 
 export default function Home() {
+  const userAddress: string = useSearchParams().get('user_address') ?? ''
   const [questionContent, setQuestionContent] = useState('')
 
   const [selectedFiles, setSelectedFiles] = useState<any>([])
@@ -26,19 +29,33 @@ export default function Home() {
     setPreviewUrls(urls)
   }
 
-  const handleUpload = async () => {
+  const handleUpload = async (): Promise<string[] | undefined> => {
     if (selectedFiles.length <= 0) {
       Swal.fire({
-        title: 'Tip',
+        icon: 'warning',
         text: 'Please select a picture to upload!',
       })
       return
     }
 
-    return selectedFiles.map((file: any) => {
-      console.log(`上传文件: ${file.name}`, file)
-      return ['1223']
-    })
+    // The stingray
+    const formData: FormData = new FormData()
+    formData.append('file', selectedFiles[0])
+    const res: { success: boolean; data: Array<string> } = await uploadImages(
+      formData
+    )
+    if (!res.success) {
+      Swal.fire({
+        icon: 'warning',
+        text: 'Please select a picture to upload!',
+      })
+      return
+    }
+    return res.data
+    // return selectedFiles.map((file: any) => {
+    //   console.log(`${file.name}`, file)
+    //   return ['','']
+    // })
   }
 
   const handleRemoveFile = (index: number) => {
@@ -54,14 +71,51 @@ export default function Home() {
   const handleSubmit = async () => {
     if (!questionContent) {
       Swal.fire({
-        title: 'Tip',
+        icon: 'warning',
         text: 'Please enter a description of the problem.',
       })
       return
     }
-    const imgRes = await handleUpload()
-    console.log('提交问题', imgRes)
+    const imgRes: undefined | Array<string> = await handleUpload()
+
+    try {
+      const res = await createQuestion({
+        userAddress: userAddress,
+        context: questionContent,
+        image: imgRes ? imgRes[0] : '',
+      })
+      if (!res.success) {
+        Swal.fire({
+          icon: 'error',
+          text: res.message,
+        })
+        return
+      } else {
+        Swal.fire({
+          icon: 'success',
+          text: 'Submit successfully',
+        })
+      }
+    } catch (error: any) {
+      Swal.fire({
+        icon: 'error',
+        text: 'Some Error,Please try again later!',
+      })
+    }
   }
+
+  const _fetch = async () => {
+    if (!userAddress) {
+      Swal.fire({
+        icon: 'error',
+        text: 'User address is missing, please try again later',
+      }).finally(() => self.close())
+    }
+  }
+
+  useEffect(() => {
+    _fetch()
+  }, [userAddress])
 
   return (
     <Suspense fallback={null}>
