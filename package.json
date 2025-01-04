@@ -5,6 +5,8 @@
   "scripts": {
     "dev": "dotenv -e .env.dev next dev",
     "build": "next build",
+    "build:dev": "dotenv -e .env.dev next build",
+    "build:test": "dotenv -e .env.test next build",
     "start": "next start",
     "lint": "next lint",
     "cz": "czg",
