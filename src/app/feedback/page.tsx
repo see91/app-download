@@ -1,5 +1,5 @@
 'use client'
-import { Suspense, useState, useRef, useEffect } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import {
   Tabs,
   Tab,
@@ -10,6 +10,7 @@ import {
   Button,
 } from '@nextui-org/react'
 import Swal from 'sweetalert2'
+import { Response } from '@/app/services/apiService'
 import { useSearchParams } from 'next/navigation'
 import { uploadImages, createQuestion } from '@/app/services/apiService'
 
@@ -17,15 +18,22 @@ export default function Home() {
   const userAddress: string = useSearchParams().get('user_address') ?? ''
   const [questionContent, setQuestionContent] = useState('')
 
-  const [selectedFiles, setSelectedFiles] = useState<any>([])
-  const [previewUrls, setPreviewUrls] = useState<any>([])
-  const fileInputRef = useRef<any>(null)
+  const [selectedFiles, setSelectedFiles] = useState<File[]>([])
+  const [previewUrls, setPreviewUrls] = useState<Array<string>>([])
+  const fileInputRef = useRef<HTMLInputElement>(null)
 
-  const handleFileChange = (event: any) => {
-    const files = Array.from(event.target.files)
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const fileList = event.target.files
+
+    if (!fileList) {
+      console.warn('No files selected')
+      return
+    }
+
+    const files = Array.from(fileList) as File[]
     setSelectedFiles(files)
 
-    const urls = files.map((file: any) => URL.createObjectURL(file))
+    const urls = files.map((file: File) => URL.createObjectURL(file))
     setPreviewUrls(urls)
   }
 
@@ -41,9 +49,7 @@ export default function Home() {
     // The stingray
     const formData: FormData = new FormData()
     formData.append('file', selectedFiles[0])
-    const res: { success: boolean; data: Array<string> } = await uploadImages(
-      formData
-    )
+    const res: Response = await uploadImages(formData)
     if (!res.success) {
       Swal.fire({
         icon: 'warning',
@@ -51,7 +57,12 @@ export default function Home() {
       })
       return
     }
-    return res.data
+
+    if (Array.isArray(res.data)) {
+      return res.data
+    }
+
+    return
     // return selectedFiles.map((file: any) => {
     //   console.log(`${file.name}`, file)
     //   return ['','']
@@ -76,7 +87,7 @@ export default function Home() {
       })
       return
     }
-    const imgRes: undefined | Array<string> = await handleUpload()
+    const imgRes: string[] | undefined = await handleUpload()
 
     try {
       const res = await createQuestion({
@@ -96,11 +107,17 @@ export default function Home() {
           text: 'Submit successfully',
         })
       }
-    } catch (error: any) {
+    } catch {
       Swal.fire({
         icon: 'error',
         text: 'Some Error,Please try again later!',
       })
+    }
+  }
+
+  const triggerFileInput = () => {
+    if (fileInputRef.current) {
+      fileInputRef.current.click()
     }
   }
 
@@ -115,10 +132,9 @@ export default function Home() {
 
   useEffect(() => {
     _fetch()
-  }, [userAddress])
+  }, [userAddress, _fetch])
 
   return (
-    <Suspense fallback={null}>
       <div className="items-center justify-items-center min-h-screen sm:p-20 font-[family-name:var(--font-geist-sans)] bg-hb-pattern-mobile bg-no-repeat bg-cover">
         <main className="w-full flex flex-col items-center sm:items-start">
           <div className="w-full px-3 grid grid-cols-3 gap-1 m-header min-h-16 items-center text-center">
@@ -174,7 +190,7 @@ export default function Home() {
                       ))}
                       <div
                         className="w-24 h-24 border-2 border-[#cccccc] flex items-center justify-center cursor-pointer rounded-lg text-[30px]"
-                        onClick={() => fileInputRef.current.click()}
+                        onClick={triggerFileInput}
                       >
                         +
                       </div>
@@ -212,6 +228,5 @@ export default function Home() {
           </div>
         </main>
       </div>
-    </Suspense>
   )
 }

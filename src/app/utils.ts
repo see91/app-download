@@ -5,4 +5,4 @@ export const ellipsisFormat = (input: string | number, number = 10) => {
 }
 
 export const sleep = (time: number) =>
-    new Promise((res, rej) => setTimeout(res, 1000 * time))
+    new Promise((res) => setTimeout(res, 1000 * time))

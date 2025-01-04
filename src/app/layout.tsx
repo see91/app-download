@@ -1,3 +1,4 @@
+import { Suspense } from 'react'
 import type { Metadata } from 'next'
 import localFont from 'next/font/local'
 import { NextUIProvider } from '@nextui-org/react'
@@ -29,7 +30,9 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <NextUIProvider>{children}</NextUIProvider>
+        <Suspense fallback={null}>
+          <NextUIProvider>{children}</NextUIProvider>
+        </Suspense>
       </body>
     </html>
   )
