@@ -1,7 +1,16 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /* config options here */
+  images: {
+    remotePatterns: [
+      {
+        protocol: "http",
+        hostname: "8.219.11.39", // HTTP 资源的域名
+        port: "8080",
+        pathname: "/**", // 匹配所有路径
+      },
+    ],
+  },
   async rewrites() {
     return [
       {
