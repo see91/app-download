@@ -20,6 +20,7 @@ import {
   QuestionListItem,
   QuestionListResponse,
 } from '@/app/services/apiService'
+import { replaceIpfsUrl } from '../utils'
 
 enum Status {
   Waiting = 0,
@@ -45,7 +46,11 @@ const renderQuestion = (
             {Status[x.status]}
           </span>
         </div>
-        <img className="w-20 h-20 rounded-lg my-2" src={x.image} alt="" />
+        <Image
+          src={replaceIpfsUrl(x.image)}
+          alt=""
+          className="w-20 h-20 rounded-lg my-2"
+        />
         <p>{x.createTime}</p>
       </li>
     ))
@@ -261,7 +266,7 @@ export default function Home() {
                         className="relative w-24 h-24 rounded-lg overflow-hidden"
                       >
                         <Image
-                          src={url}
+                          src={replaceIpfsUrl(url)}
                           alt={`Preview ${index}`}
                           className="w-full h-full object-cover"
                         />
