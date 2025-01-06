@@ -33,7 +33,7 @@ export interface Response {
     data: | string[]
     | { [key: string]: string[] }
     | QuestionListResponse
-    | { records: QuestionListItem[] }
+    | { records: QuestionListItem[], total: number }
     | null;
 }
 

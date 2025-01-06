@@ -9,6 +9,8 @@ import {
   Input,
   Button,
   Image,
+  Spinner,
+  Pagination,
 } from '@nextui-org/react'
 import Swal from 'sweetalert2'
 import { useSearchParams } from 'next/navigation'
@@ -65,13 +67,16 @@ const renderQuestion = (
   )
 
 export default function Home() {
+  const pageSize = 10
   const userAddress: string = useSearchParams().get('user_address') ?? ''
   const [questionContent, setQuestionContent] = useState('')
+  const [loading, setLoading] = useState<boolean>(false)
 
   const [selectedFiles, setSelectedFiles] = useState<File[]>([])
   const [previewUrls, setPreviewUrls] = useState<Array<string>>([])
   const [waitingList, setWaitingList] = useState<Response['data'] | null>()
   const [repliedList, setRepliedList] = useState<Response['data'] | null>()
+  const [currentPage, setCurrentPage] = useState<number>(1)
 
   const fileInputRef = useRef<HTMLInputElement>(null)
 
@@ -180,10 +185,24 @@ export default function Home() {
 
   type TabKeyFunction = () => Promise<void>
   const handleChangeTab = (tabKey: string | number) => {
+    setCurrentPage(1)
+    _fetchData(tabKey)
+  }
+
+  const handleChangePage = (tabKey: string | number, page: number) => {
+    setCurrentPage(page)
+    _fetchData(tabKey, page)
+  }
+
+  const _fetchData = async (
+    tabKey: string | number,
+    pageNumber: number = 1
+  ) => {
     const tabKeys: Record<string, TabKeyFunction> = {
       waiting: async () => {
         const { success, data, message } = await getProblemFeedback({
           userAddress,
+          pageNumber,
         })
         if (success) {
           setWaitingList(data)
@@ -198,6 +217,7 @@ export default function Home() {
         const { success, data, message } = await getProblemFeedback({
           userAddress,
           status: 1,
+          pageNumber,
         })
         if (success) {
           setRepliedList(data)
@@ -211,7 +231,9 @@ export default function Home() {
     }
 
     if (tabKeys[tabKey]) {
-      tabKeys[tabKey]()
+      setLoading(true)
+      await tabKeys[tabKey]()
+      setLoading(false)
     }
   }
 
@@ -226,103 +248,133 @@ export default function Home() {
 
   useEffect(() => {
     _fetch()
-  }, [_fetch])
+  }, [_fetch, waitingList, repliedList])
 
   return (
-    <div className="items-center justify-items-center min-h-screen sm:p-20 font-[family-name:var(--font-geist-sans)] bg-hb-pattern-mobile bg-no-repeat bg-cover">
-      <main className="w-full flex flex-col items-center sm:items-start">
-        <div className="w-full px-3 grid grid-cols-3 gap-1 m-header min-h-16 items-center text-center">
-          {/* <div className="bg-back flex w-6 h-6" /> */}
-          <div />
-          <div className="m-title text-UI-Color-Neutral-100 text-[18px] font-extrabold">
-            FeedBack
+    <>
+      <div className="items-center justify-items-center min-h-screen sm:p-20 font-[family-name:var(--font-geist-sans)] bg-hb-pattern-mobile bg-no-repeat bg-cover">
+        <main className="w-full flex flex-col items-center sm:items-start">
+          <div className="w-full px-3 grid grid-cols-3 gap-1 m-header min-h-16 items-center text-center">
+            {/* <div className="bg-back flex w-6 h-6" /> */}
+            <div />
+            <div className="m-title text-UI-Color-Neutral-100 text-[18px] font-extrabold">
+              FeedBack
+            </div>
+            <div />
           </div>
-          <div />
-        </div>
 
-        <div className="">
-          <Tabs
-            aria-label="Options"
-            className="w-full flex justify-center"
-            onSelectionChange={handleChangeTab}
-          >
-            <Tab key="submit" title="Submit a question">
-              <Card>
-                <CardBody>
-                  <Textarea
-                    isRequired
-                    label="Problem Description"
-                    placeholder="Input content"
-                    value={questionContent}
-                    labelPlacement="outside"
-                    onChange={(e) => setQuestionContent(e.target.value)}
-                  />
-                  <Input
-                    type="file"
-                    // multiple
-                    ref={fileInputRef}
-                    onChange={handleFileChange}
-                    accept="image/*"
-                    className="hidden"
-                  />
-                  <div className="flex flex-wrap gap-3 my-5">
-                    {previewUrls.map((url: string, index: number) => (
-                      <div
-                        key={index}
-                        className="relative w-24 h-24 rounded-lg overflow-hidden"
-                      >
-                        <Image
-                          src={replaceIpfsUrl(url)}
-                          alt={`Preview ${index}`}
-                          className="w-full h-full object-cover"
-                        />
-                        <Button
-                          color="danger"
-                          size="sm"
-                          className="absolute top-1 right-1 p-0 min-w-5 h-5 rounded-3xl"
-                          onPress={() => handleRemoveFile(index)}
+          <div>
+            <Tabs
+              aria-label="Options"
+              className="w-full flex justify-center"
+              onSelectionChange={handleChangeTab}
+            >
+              <Tab key="submit" title="Submit a question">
+                <Card>
+                  <CardBody>
+                    <Textarea
+                      isRequired
+                      label="Problem Description"
+                      placeholder="Input content"
+                      value={questionContent}
+                      labelPlacement="outside"
+                      onChange={(e) => setQuestionContent(e.target.value)}
+                    />
+                    <Input
+                      type="file"
+                      // multiple
+                      ref={fileInputRef}
+                      onChange={handleFileChange}
+                      accept="image/*"
+                      className="hidden"
+                    />
+                    <div className="flex flex-wrap gap-3 my-5">
+                      {previewUrls.map((url: string, index: number) => (
+                        <div
+                          key={index}
+                          className="relative w-24 h-24 rounded-lg overflow-hidden"
                         >
-                          ✕
-                        </Button>
+                          <Image
+                            src={replaceIpfsUrl(url)}
+                            alt={`Preview ${index}`}
+                            className="w-full h-full object-cover"
+                          />
+                          <Button
+                            color="danger"
+                            size="sm"
+                            className="absolute top-1 right-1 p-0 min-w-5 h-5 rounded-3xl"
+                            onPress={() => handleRemoveFile(index)}
+                          >
+                            ✕
+                          </Button>
+                        </div>
+                      ))}
+                      <div
+                        className="w-24 h-24 border-2 border-[#cccccc] flex items-center justify-center cursor-pointer rounded-lg text-[30px]"
+                        onClick={triggerFileInput}
+                      >
+                        +
                       </div>
-                    ))}
-                    <div
-                      className="w-24 h-24 border-2 border-[#cccccc] flex items-center justify-center cursor-pointer rounded-lg text-[30px]"
-                      onClick={triggerFileInput}
-                    >
-                      +
                     </div>
-                  </div>
-                  <Button
-                    className="bg-[#52353C] text-white"
-                    onPress={handleSubmit}
-                  >
-                    Submit
-                  </Button>
-                </CardBody>
-              </Card>
-            </Tab>
-            <Tab key="waiting" title="Waiting for reply">
-              <Card>
-                <CardBody>
-                  <ul className="space-y-5 text-white">
-                    {renderQuestion(waitingList)}
-                  </ul>
-                </CardBody>
-              </Card>
-            </Tab>
-            <Tab key="replied" title="Replied">
-              <Card>
-                <CardBody>
-                  <ul className="space-y-5 text-white">
-                    {renderQuestion(repliedList)}
-                  </ul>
-                </CardBody>
-              </Card>
-            </Tab>
-          </Tabs>
+                    <Button
+                      className="bg-[#52353C] text-white"
+                      onPress={handleSubmit}
+                    >
+                      Submit
+                    </Button>
+                  </CardBody>
+                </Card>
+              </Tab>
+              <Tab key="waiting" title="Waiting for reply">
+                <Card>
+                  <CardBody>
+                    <ul className="space-y-5 text-white">
+                      {renderQuestion(waitingList)}
+                    </ul>
+                    <Pagination
+                      page={currentPage}
+                      total={
+                        waitingList && 'total' in waitingList
+                          ? Math.ceil((waitingList?.total as number) / pageSize)
+                          : 1
+                      }
+                      color="danger"
+                      showShadow
+                      onChange={handleChangePage.bind('', 'waiting')}
+                      className="self-center my-3"
+                    />
+                  </CardBody>
+                </Card>
+              </Tab>
+              <Tab key="replied" title="Replied">
+                <Card>
+                  <CardBody>
+                    <ul className="space-y-5 text-white">
+                      {renderQuestion(repliedList)}
+                    </ul>
+                    <Pagination
+                      page={currentPage}
+                      total={
+                        repliedList && 'total' in repliedList
+                          ? Math.ceil((repliedList?.total as number) / pageSize)
+                          : 0
+                      }
+                      color="danger"
+                      onChange={handleChangePage.bind('', 'replied')}
+                      className="self-center my-3"
+                    />
+                  </CardBody>
+                </Card>
+              </Tab>
+            </Tabs>
+          </div>
+        </main>
+      </div>
+      {loading && (
+        <div className="fixed top-0 left-0 right-0 bottom-0 flex items-center justify-center w-screen h-screen bg-[rgba(0,0,0,0.8)] z-50">
+          <Spinner size="lg" />
         </div>
-      </main>
-    </div>
+      )}
+    </>
   )
 }
