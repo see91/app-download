@@ -52,6 +52,12 @@ const renderQuestion = (
           className="w-20 h-20 rounded-lg my-2"
         />
         <p>{x.createTime}</p>
+        {x.status === Status.Replied && x.responseContext && (
+          <div className="border-2 px-2 py-1 rounded-md mt-5">
+            <span>Reply: </span>
+            <span>{x.responseContext}</span>
+          </div>
+        )}
       </li>
     ))
   ) : (
