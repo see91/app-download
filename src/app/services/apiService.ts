@@ -55,6 +55,11 @@ export const uploadImages = async (postData: FormData): Promise<Response> => {
     }
 };
 
+/**
+ * Creat Feedback Question
+ * @param postData 
+ * @returns 
+ */
 export const createQuestion = async (postData: {
     context: string,
     image: string,
@@ -68,6 +73,11 @@ export const createQuestion = async (postData: {
     }
 };
 
+/**
+ * Get Problem Feedback
+ * @param param0 
+ * @returns 
+ */
 export const getProblemFeedback = async ({
     pageNumber = 1,
     pageSize = 10,
@@ -81,6 +91,20 @@ export const getProblemFeedback = async ({
 }): Promise<Response> => {
     try {
         return await axiosInstance.get("problemFeedback", { params: { pageNumber, pageSize, status, userAddress } });
+    } catch (error) {
+        console.error("Error creating post:", error);
+        throw error;
+    }
+};
+
+/**
+ * Get Post Detail By Post ID
+ * @param param0 
+ * @returns 
+ */
+export const getPostDetailByID = async ({ postID = '' }: { postID: string | number; }): Promise<Response> => {
+    try {
+        return await axiosInstance.get(`post/findById/${postID}`);
     } catch (error) {
         console.error("Error creating post:", error);
         throw error;
