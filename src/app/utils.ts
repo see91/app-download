@@ -16,7 +16,7 @@ export const replaceIpfsUrl = (url: string) => {
     const oldBase = "http://8.219.11.39:8080/ipfs/";
     const newBase = "https://dev-ipfs.nulink.org/ipfs/";
 
-    if (url.startsWith(oldBase)) {
+    if (url && url.startsWith(oldBase)) {
         return url.replace(oldBase, newBase);
     }
     return url;
