@@ -5,6 +5,7 @@ import { useSearchParams } from 'next/navigation'
 import { Button, Image } from '@nextui-org/react'
 import { SetStateAction, useCallback, useEffect, useState } from 'react'
 import { getPostDetailByID } from '@/app/services/apiService'
+import { replaceIpfsUrl } from '../utils'
 
 export default function Share() {
   const [currentSlide, setCurrentSlide] = useState(0)
@@ -66,7 +67,7 @@ export default function Share() {
         <div className="w-full flex items-center justify-between px-6">
           <div className="flex items-center">
             <Image
-              src={postDetails?.userAvatar || '/user.svg'}
+              src={replaceIpfsUrl(postDetails?.userAvatar) || '/user.svg'}
               width={50}
               height={50}
               className="rounded-full"
@@ -91,7 +92,7 @@ export default function Share() {
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             postDetails?.fileInfos.map((slide: any, index: number) => (
               <Image
-                src={slide.thumbnail || ''}
+                src={replaceIpfsUrl(slide.thumbnail) || ''}
                 key={index}
                 width={'100%'}
                 height={350}
