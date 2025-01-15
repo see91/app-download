@@ -137,7 +137,10 @@ export default function Share() {
           )}
         </Slider>
 
-        <button className="flex items-center btn-shadow w-fit my-4 bg-UI-Color-Indigo-200 px-[32px] py-[16px] rounded-full text-[18px] text-center font-semibold leading-[100%] text-neutral-100 font-sans fixed bottom-5">
+        <button
+          className="flex items-center btn-shadow w-fit my-4 bg-UI-Color-Indigo-200 px-[32px] py-[16px] rounded-full text-[18px] text-center font-semibold leading-[100%] text-neutral-100 font-sans fixed bottom-5"
+          onClick={() => window.open('https://app.creamstream.io/', '_blank')}
+        >
           Download App
         </button>
 
