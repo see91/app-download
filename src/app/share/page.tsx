@@ -1,11 +1,29 @@
 'use client'
-import Slider from 'react-slick'
 import Swal from 'sweetalert2'
-import { useSearchParams } from 'next/navigation'
-import { Button, Image } from '@nextui-org/react'
-import { SetStateAction, useCallback, useEffect, useState } from 'react'
-import { getPostDetailByID } from '@/app/services/apiService'
+import Slider from 'react-slick'
+import copy from 'copy-to-clipboard'
+import { Image } from '@nextui-org/react'
 import { replaceIpfsUrl } from '../utils'
+import { useSearchParams } from 'next/navigation'
+import { getPostDetailByID } from '@/app/services/apiService'
+import { SetStateAction, useCallback, useEffect, useState } from 'react'
+
+const medias = [
+  {
+    name: 'Copy Link',
+    icon: '/copy_2.svg',
+  },
+  {
+    name: 'Twitter/X',
+    link: 'https://x.com/_creamstream',
+    icon: '/x.svg',
+  },
+  {
+    name: 'Telegram',
+    link: 'https://t.me/creamstream_io',
+    icon: '/tg.svg',
+  },
+]
 
 export default function Share() {
   const [currentSlide, setCurrentSlide] = useState(0)
@@ -19,6 +37,7 @@ export default function Share() {
     speed: 500,
     slidesToShow: 1,
     slidesToScroll: 1,
+    arrows: false,
     beforeChange: (_: SetStateAction<number>, next: SetStateAction<number>) =>
       setCurrentSlide(next),
     customPaging: (i: number) => (
@@ -31,11 +50,21 @@ export default function Share() {
     ),
   }
 
-  const handleToast = () => {
-    Swal.fire({
-      text: 'This operation can only be performed within the App',
-      showConfirmButton: false,
-    })
+  const handleClickMedia = (link: string | undefined) => {
+    if (!link) {
+      try {
+        copy(window.location.href)
+        Swal.fire({
+          icon: 'success',
+          title: 'Copy Success !',
+          showConfirmButton: false,
+        })
+      } catch (error) {
+        console.error(error)
+      }
+    } else {
+      window.open(link, '_blank')
+    }
   }
 
   const _fetch = useCallback(async () => {
@@ -63,9 +92,9 @@ export default function Share() {
 
   return (
     <div className="items-center justify-items-center min-h-screen sm:p-20 font-[family-name:var(--font-geist-sans)] bg-hb-pattern-mobile bg-no-repeat bg-cover">
-      <main className="w-full flex flex-col items-center sm:items-start pt-6">
-        <div className="w-full flex items-center justify-between px-6">
-          <div className="flex items-center">
+      <main className="w-full flex flex-col items-center sm:items-start pt-6 px-6">
+        <div className="w-full flex items-center justify-between">
+          <div className="flex items-center w-full">
             <Image
               src={replaceIpfsUrl(postDetails?.userAvatar) || '/user.svg'}
               width={50}
@@ -74,15 +103,19 @@ export default function Share() {
               alt=""
             />
 
-            <span className="text-white mx-2 max-w-24">
-              {postDetails && 'userNickName' in postDetails
-                ? postDetails?.userNickName
-                : '~'}
-            </span>
+            <div className="mx-2 w-[calc(100%-70px)]">
+              <p className="overflow-hidden text-ellipsis whitespace-nowrap text-[18px] font-sans font-extrabold leading-[145%] text-neutral-100">
+                {postDetails?.userNickName || '~'}
+              </p>
+              <p className="text-[12px] font-medium leading-[145%] text-neutral-500 font-sans">
+                {postDetails?.updateTime}
+              </p>
+            </div>
           </div>
-          <Button color="danger" onPress={handleToast}>
-            + Floow
-          </Button>
+        </div>
+
+        <div className="text-neutral-100 w-full text-[18px] leading-[145%] font-medium line-clamp-4 mt-4 border-neutral-100 break-words">
+          {postDetails?.context || '~'}
         </div>
 
         <Slider {...sliderSettings} className="w-full text-red-500 mt-5">
@@ -100,51 +133,31 @@ export default function Share() {
               />
             ))
           ) : (
-            <div>No Data</div>
+            <div className="text-center mt-9">No Data</div>
           )}
         </Slider>
 
-        <div className="text-[#F31260] w-full text-[18px] line-clamp-4 px-3 mt-4">
-          {postDetails && 'context' in postDetails ? postDetails?.context : '~'}
-        </div>
-        <p className="w-full text-left px-3 mt-3 text-white text-[14px]">
-          {postDetails && 'updateTime' in postDetails
-            ? postDetails?.updateTime
-            : '~'}
-        </p>
+        <button className="flex items-center btn-shadow w-fit my-4 bg-UI-Color-Indigo-200 px-[32px] py-[16px] rounded-full text-[18px] text-center font-semibold leading-[100%] text-neutral-100 font-sans fixed bottom-5">
+          Download App
+        </button>
 
-        <div className="mt-8 flex w-full justify-between px-3">
-          <div
-            className="text-white flex items-center space-x-1"
-            onClick={handleToast}
-          >
-            <img src="/like.svg" className="w-10 cursor-pointer" alt="" />
-            <span>
-              {postDetails && 'liked' in postDetails ? postDetails?.liked : 0}
-            </span>
-          </div>
-          <Button
-            color="danger"
-            onPress={() =>
-              Swal.fire({
-                title: 'Coming Soon...',
-                showConfirmButton: false,
-              })
-            }
-          >
-            Download App
-          </Button>
-          <div
-            className="text-white flex items-center space-x-1"
-            onClick={handleToast}
-          >
-            <span>
-              {postDetails && 'favorites' in postDetails
-                ? postDetails?.favorites
-                : 0}
-            </span>
-            <img src="/love.svg" className="w-10 cursor-pointer" alt="" />
-          </div>
+        <div className="border-t-1 border-[#52353C] w-full grid grid-cols-3 gap-4 pt-10 mt-10">
+          {medias.map((x, index) => (
+            <div
+              className=" flex flex-col items-center justify-center p-4 rounded-[8px] border-2 border-indigo-100 bg-[rgba(255,254,252,0.01)] shadow-[inset_3px_3px_4px_0px_#DCD9FD,inset_-3px_-3px_4px_0px_#7E7D91] text-center text-[18px] font-semibold leading-[100%] text-indigo-100 font-sans"
+              key={index}
+              onClick={handleClickMedia.bind('', x.link)}
+            >
+              <Image
+                src={x.icon}
+                width={32}
+                height={32}
+                alt=""
+                className="mb-4"
+              />
+              <span>{x.name}</span>
+            </div>
+          ))}
         </div>
       </main>
     </div>
