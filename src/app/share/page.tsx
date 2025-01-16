@@ -126,6 +126,7 @@ export default function Share() {
             postDetails?.fileInfos.map((slide: any, index: number) => (
               <Image
                 src={replaceIpfsUrl(slide.thumbnail) || ''}
+                className="object-cover"
                 key={index}
                 width={'100%'}
                 height={350}
@@ -147,7 +148,7 @@ export default function Share() {
         <div className="border-t-1 border-[#52353C] w-full grid grid-cols-3 gap-4 pt-10 mt-10">
           {medias.map((x, index) => (
             <div
-              className=" flex flex-col items-center justify-center p-4 rounded-[8px] border-2 border-indigo-100 bg-[rgba(255,254,252,0.01)] shadow-[inset_3px_3px_4px_0px_#DCD9FD,inset_-3px_-3px_4px_0px_#7E7D91] text-center text-[18px] font-semibold leading-[100%] text-indigo-100 font-sans"
+              className="flex flex-col items-center justify-center px-4 py-7 rounded-[8px] border-2 border-indigo-100 bg-[rgba(255,254,252,0.01)] shadow-[inset_3px_3px_4px_0px_#DCD9FD,inset_-3px_-3px_4px_0px_#7E7D91] text-center text-[18px] font-semibold leading-[100%] text-indigo-100 font-sans"
               key={index}
               onClick={handleClickMedia.bind('', x.link)}
             >
@@ -156,9 +157,9 @@ export default function Share() {
                 width={32}
                 height={32}
                 alt=""
-                className="mb-4"
+                className="mb-4 rounded-none"
               />
-              <span>{x.name}</span>
+              <span className="mt-2 whitespace-nowrap">{x.name}</span>
             </div>
           ))}
         </div>
