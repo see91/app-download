@@ -47,11 +47,12 @@ const ReferrerInfo = () => {
 }
 
 export default function Home() {
-  const _download = () => {
-    Swal.fire({
-      title: 'Coming Soon...',
-      showConfirmButton: false,
-    })
+  const _download = (platform: 'ios' | 'android') => {
+    const downloadLinks: Record<'ios' | 'android', string> = {
+      ios: 'https://testflight.apple.com/join/eXuKuZud',
+      android: 'https://www.pgyer.com/ApmjYHMk',
+    }
+    window.open(downloadLinks[platform], '_blank')
   }
 
   return (
@@ -99,7 +100,7 @@ export default function Home() {
         <div className="flex flex-col items-center">
           <button
             className="flex items-center btn-shadow w-fit my-4 bg-UI-Color-Indigo-200 px-[32px] py-[16px] rounded-full text-UI-Color-Neutral-100 text-[18px] font-extrabold"
-            onClick={_download}
+            onClick={_download.bind('', 'ios')}
           >
             <Image
               className="mr-[12px]"
@@ -114,7 +115,7 @@ export default function Home() {
 
           <button
             className="flex items-center btn-shadow w-fit my-4 bg-UI-Color-Indigo-200 px-[32px] py-[16px] rounded-full text-UI-Color-Neutral-100 text-[18px] font-extrabold"
-            onClick={_download}
+            onClick={_download.bind('', 'android')}
           >
             <Image
               className="mr-[12px]"
