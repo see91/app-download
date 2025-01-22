@@ -7,6 +7,10 @@ const nextConfig: NextConfig = {
         source: "/dev/:path*",
         destination: "http://47.237.106.59:8083/:path*",
       },
+      {
+        source: "/test/:path*",
+        destination: "http://47.237.123.177:8083/:path*",
+      },
     ];
   },
 };
