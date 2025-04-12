@@ -47,10 +47,16 @@ const ReferrerInfo = () => {
 }
 
 export default function Home() {
+  const android: string = useSearchParams().get('android') ?? ''
+
   const _download = (platform: 'ios' | 'android') => {
     const downloadLinks: Record<'ios' | 'android', string> = {
       ios: 'https://testflight.apple.com/join/eXuKuZud',
       android: 'https://www.pgyer.com/ApmjYHMk',
+    }
+    if (platform === 'android' && android === 'apk') {
+      window.open('https://app.creamstream.io/CreamStream_V103_Test_3.apk', '_blank')
+      return
     }
     window.open(downloadLinks[platform], '_blank')
   }
