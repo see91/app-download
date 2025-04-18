@@ -55,7 +55,7 @@ export default function Home() {
       android: 'https://www.pgyer.com/ApmjYHMk',
     }
     if (platform === 'android' && android === 'apk') {
-      window.open('https://app.creamstream.io/CreamStream_V103_Test_3.apk', '_blank')
+      window.open('https://media.githubusercontent.com/media/see91/app-download/refs/heads/main/public/CreamStream_V103_Test_3.apk', '_blank')
       return
     }
     window.open(downloadLinks[platform], '_blank')
